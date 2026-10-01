@@ -1,0 +1,22 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+data/raw/html/
+data/processed/
+.DS_Store
+output/edits/
+output/*.xlsx
+
+# Local-only leak-check deny list: contains client terms, NEVER commit
+.leakcheck-denylist.txt
+
+# Demo copies staged by scripts/run_demo.sh (exact paths)
+reference/sihs-blog-bank.csv
+reference/blog-url-inventory.csv
+reference/focus-keywords.csv
+reference/product-spec-garment.csv
+reference/product-spec-fans.csv
+reference/product-spec-vacuums.csv
+reference/skus-steam-irons.csv
+reference/skus-handheld-steamers.csv

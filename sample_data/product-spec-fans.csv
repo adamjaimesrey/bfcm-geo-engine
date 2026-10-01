@@ -1,0 +1,3 @@
+category,product_name,sku,url,min_power,max_power,max_air_flow,noise_level,speeds,remote_control,silent_mode,oscillation_angle,source,last_verified
+Fans,Zephra Tower Fan 40,ZPH-40,https://www.ecomusa.example/p/zephra-tower-fan-40,8 W,42 W,310 m3/h,32 dB,3,Yes,Yes,80 degrees,demo,2026-09-01
+Fans,Zephra Table Fan 25,ZPH-25,https://www.ecomusa.example/p/zephra-table-fan-25,5 W,28 W,190 m3/h,36 dB,3,No,No,60 degrees,demo,2026-09-01

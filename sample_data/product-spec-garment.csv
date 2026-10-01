@@ -1,0 +1,8 @@
+category,product_name,sku,url,power,continuous_steam_output,steam_boost,heat_up,steam_levels,source,last_verified
+Steam Irons,Velora Steam Iron 2400,VEL-2400,https://www.ecomusa.example/p/velora-steam-iron-2400,2400 W,45 g/min,150 g/min,Instant heat,5,demo,2026-09-01
+Steam Irons,Glidemax Glide Steam Iron,GLD-2200,https://www.ecomusa.example/p/glidemax-glide-steam-iron,2200 W,40 g/min,130 g/min,Instant heat,4,demo,2026-09-01
+Steam Irons,Glidemax Compact Iron,GLD-1800,https://www.ecomusa.example/p/glidemax-compact-iron,1800 W,30 g/min,100 g/min,Instant heat,3,demo,2026-09-01
+Handheld Steamers,Brisa Handheld Steamer,BRS-1500,https://www.ecomusa.example/p/brisa-handheld-steamer,1500 W,22 g/min,Built-in burst,45 seconds,2,demo,2026-09-01
+Handheld Steamers,PocketPuff Mini Steamer,PKT-1000,https://www.ecomusa.example/p/pocketpuff-mini-steamer,1000 W,14 g/min,Built-in burst,25 seconds,1,demo,2026-09-01
+Handheld Suction Steamers,AirLift Spin,ALS-1600,https://www.ecomusa.example/p/airlift-spin,1600 W,28 g/min,Suction-assist burst,40 seconds,3,demo,2026-09-01
+Handheld Suction Steamers,AirLift Spin Deluxe,ALS-1800,https://www.ecomusa.example/p/airlift-spin-deluxe,1800 W,32 g/min,Suction-assist burst,40 seconds,3,demo,2026-09-01
