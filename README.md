@@ -1,6 +1,6 @@
 # BFCM GEO Engine
 
-**A pipeline that scores how easily AI search engines can extract answers from a brand's blog content, prioritises the pages to fix before Black Friday / Cyber Monday, and generates paste-ready edit briefs for the content team.**
+**Two modules that make a brand's content easier for AI search engines to use before Black Friday / Cyber Monday: blog GEO extractability scoring with a prioritised worklist, and PDP COSMO scoring with paste-ready product-page edit briefs.**
 
 Built with Claude Code for a consumer-appliance brand. The client's identity has been anonymized ("Ecommerce" on `ecomusa.example`, with invented product names), and **all data in this repository is synthetic**.
 
@@ -16,11 +16,11 @@ Before the biggest retail weekend of the year, a content team needs to know:
 - **How extractable** is each one today, and **what exactly** is weak?
 - **What should the page say instead**, in copy that can be pasted straight in?
 
-This pipeline answers all three for a fixed set of in-scope posts (steam irons and handheld steamers).
+The **blog module** answers all three for a fixed set of in-scope posts (steam irons and handheld steamers). The **PDP module** (below) does the same for product detail pages. The runnable demo covers the blog module; the PDP module ships its code, rubric, prompt and an [example brief](sample_output/pdp-example-brief.md).
 
 ---
 
-## How it works
+## Blog module: how it works
 
 ```mermaid
 flowchart TD
@@ -53,6 +53,38 @@ flowchart TD
 
 ---
 
+## PDP module: COSMO scoring of product pages
+
+**The problem.** AI shopping and search assistants shortlist products whose pages state the outcome, the use case and the limits in plain words. A page that is only a spec list ("1600 W, 24 g/min") gives them nothing to quote, and a missing filter attribute (weight, tank size) can drop the product from a shortlist entirely. The PDP module scores each product page against six questions (what is it, who is it for / not for, what job does it do, which situation, what can it do and what are the limits, what is the benefit and why), each 0–3, converted to a COSMO score out of 100. It then writes an edit brief whose rewritten copy follows **Outcome + Feature + Use case**.
+
+**What to read:** [`sample_output/pdp-example-brief.md`](sample_output/pdp-example-brief.md), a finished synthetic brief: scorecard, exact before/after copy, a gifting bullet and a question for the client's content editor.
+
+```mermaid
+flowchart TD
+    P0[P0 Index: pdp_index.py] --> P1[P1 Capture pages: pdp_capture.py]
+    P1 --> P2[P2 Layout patterns: pdp_layouts.py]
+    P2 --> P3[P3 Scoring: written by Claude Code]
+    RB[(pdp-cosmo-rubric.md)] --> P3
+    P3 --> V1{{pdp_scores.py validator}}
+    V1 --> P4[P4 Human pilot approval]
+    P4 --> P5[P5 Briefs: written by Claude Code]
+    P5 --> V2{{pdp_render.py validator}}
+    V2 --> W[Word briefs]
+    W -.-> P6[P6 After images: planned]
+```
+
+| Stage | Script | What it does |
+|---|---|---|
+| P0. Index | `pdp_index.py` | Builds the central index (one row per page, grouped into variant groups) from the product-spec files. |
+| P1. Capture | `pdp_capture.py` | Drives a browser (Playwright) to save each page's full screenshot and its section text as `sections.json`. Needs a live site. |
+| P2. Layouts | `pdp_layouts.py` | Reduces each page to a sequence of section types and groups pages into per-category templates, written to [`reference/pdp-layout-patterns.md`](reference/pdp-layout-patterns.md). |
+| P3. Score | Claude Code + `pdp_scores.py` | Claude Code scores each group against [`reference/pdp-cosmo-rubric.md`](reference/pdp-cosmo-rubric.md) with quoted evidence; the script validates and ranks groups. |
+| P4. Pilot | (human) | One pilot brief is approved before any batch runs. |
+| P5. Brief | Claude Code + `pdp_render.py` | Claude Code writes the edits following [`reference/pdp-prompts/p5-brief.md`](reference/pdp-prompts/p5-brief.md); the script checks them and renders a `.docx`. `pdp_run_p5_batches.sh` runs batches unattended. |
+| P6. After images | (planned) | Not built. |
+
+---
+
 ## Design decisions worth noticing
 
 **Every stage has an explicit gate, and the gates fail differently on purpose.** G1 is *soft*: without a Search Console export, the run continues and the worklist is clearly marked provisional rather than blocked. G2 is *self-satisfying*: missing pages are fetched and cached, and the run only halts if a page is unrecoverable, naming it. G3 (the API key) only gates Stage 5.
@@ -72,15 +104,23 @@ flowchart TD
 | **P** | A proposed meta title ran to 76 characters | Max 60 characters, enforced in the prompt **and** in a code check |
 | **S** | The intro set a benchmark that a recommended product didn't meet | No summary may state a threshold a recommended product fails |
 
-**Honest about what isn't built.** The Search Console join is specified (G1, striking-distance and low-CTR signals) but not yet implemented, so the worklist runs in provisional mode. Competitor-relative scoring (Stage 3.5) is deferred. Both are listed as future work in `SPEC.md`.
+**The LLM writes, code audits (PDP).** Claude Code writes the scores and the briefs inside the session, with no API call and no API cost. Code then audits the result: every quoted "current" text must appear word-for-word on the captured page, the COSMO score is recomputed in code as round(sum of six scores / 18 x 100) rather than trusted, and an invalid file stops the run.
+
+**Variant groups.** Pages with identical content and identical specs (colourways) are scored once and share one brief listing every URL. If any spec differs, they are separate groups.
+
+**The batch runner knows when to stop.** `pdp_run_p5_batches.sh` halts if a run produces no new briefs (a session limit or an error), if any brief fails the renderer's checks, or if a brief carries a `for_owner` item (a gap in our own data a human must fix). Finished groups are skipped on re-run.
+
+**"COSMO" is the rubric's name.** The rubric is a GEO tool for the brand's own pages; Amazon itself is out of scope.
+
+**Honest about what isn't built.** The Search Console join is specified (G1, striking-distance and low-CTR signals) but not yet implemented, so the worklist runs in provisional mode. Competitor-relative scoring (Stage 3.5) is deferred. Both are listed as future work in `SPEC.md`. In the PDP module, **P6 (before/after images) is planned, not built**, and there is **no runnable PDP demo**: P1 and P6 need a live site, so this repo shows the PDP code, rubric, prompt and an example brief instead.
 
 **Part of a larger system.** Pages that are thin or superseded are routed to a "refresh / consolidate" bucket, the hand-off point to a sister pipeline: [SEO Cannibalization Engine](https://github.com/adamjaimesrey/seo-cannibalization-engine).
 
 ---
 
-## Run the demo
+## Run the demo (blog module only)
 
-Requires Python 3.
+Requires Python 3. The PDP module has no runnable demo.
 
 ```bash
 python3 -m venv .venv
@@ -104,10 +144,10 @@ Stage 5 needs an Anthropic API key (see `.env.example`), so the demo skips it. A
 ## Repository structure
 
 ```
-scripts/          one script per stage, plus run_blog_demo.sh and leak_check.py
-reference/        scoring rubric, classification patterns, controlled vocabulary, QA log
-sample_data/      synthetic inputs and cached pages for the demo
-sample_output/    an example Stage 5 brief
+scripts/          blog_*.py (Stages 1-5), pdp_*.py / pdp_run_p5_batches.sh (P0-P5), run_blog_demo.sh, check_specs.py, leak_check.py
+reference/        blog scoring rubric and patterns, PDP COSMO rubric, layout patterns and P5 prompt, controlled vocabulary, QA log
+sample_data/      synthetic inputs and cached pages for the blog demo
+sample_output/    an example blog Stage 5 brief and an example PDP brief
 CLAUDE.md         instructions for Claude Code
 SPEC.md           design specification
 ```

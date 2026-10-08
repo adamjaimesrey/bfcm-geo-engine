@@ -8,6 +8,13 @@ data/processed/
 output/blog-edits/
 output/*.xlsx
 
+# PDP module generated paths
+data/raw/pdp/
+data/processed/pdp-scores/
+data/processed/pdp-briefs/
+output/pdp-edits/
+reference/pdp-index.csv
+
 # Local-only leak-check deny list: contains client terms, NEVER commit
 .leakcheck-denylist.txt
 
