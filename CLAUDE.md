@@ -9,11 +9,11 @@ handheld-steamer blog content for Black Friday / Cyber Monday. It filters the bl
 to a fixed in-scope set (the **SIHS-blog-bank**, 51 posts), classifies each page by
 decision-content type, scores each page's extractability against a fixed rubric
 (absolute — no competitor comparison in the MVP), joins GSC signals to prioritise,
-and outputs a worklist table (`output/sihs-worklist.xlsx`). **Full details live
+and outputs a worklist table (`output/blog-worklist.xlsx`). **Full details live
 in `SPEC.md` — read
 it before building.** MVP = Stages 0–4. Stage 5 (LLM copy-remediation,
-`scripts/remediate.py`) was built after the MVP; its rules live in
-`reference/stage5-prompt-issues.md`. Stage 3.5 (competitor-relative) is deferred;
+`scripts/blog_remediate.py`) was built after the MVP; its rules live in
+`reference/blog-stage5-prompt-issues.md`. Stage 3.5 (competitor-relative) is deferred;
 do not build it or install its dependencies.
 
 ## How to work with me
@@ -35,7 +35,7 @@ if unmet. Full table in `SPEC.md` §4.
   `gsc_joined=False`, warn loudly, continue in intent-only mode; prioritisation is
   provisional until joined. Do NOT block the MVP on this.
 - **G2 (self-satisfied) — Stage 3:** live HTML for all 51 posts. Fetch and cache to
-  `data/raw/html/`; hard-halt only if a URL is unrecoverable after retry, listing
+  `data/raw/blog-html/`; hard-halt only if a URL is unrecoverable after retry, listing
   the failed slugs.
 - **G3 — Stage 5 only:** `ANTHROPIC_API_KEY` in `.env` (see `.env.example`). Not needed for Stages 0–4.
 - **G3.5 (deferred) — Stage 3.5 only:** competitor-URL list. Out of MVP scope.
@@ -59,9 +59,9 @@ if unmet. Full table in `SPEC.md` §4.
 - Write intermediate output to `data/processed/`; never overwrite `data/raw/` or
   `reference/`.
 - **Be polite to the live site.** Descriptive user-agent, rate-limit fetches, and
-  reuse `data/raw/html/` cache on re-runs — never re-hit a page already cached.
-- Scoring weights/thresholds live in `reference/scoring-rules.md`; classification
-  patterns in `reference/content-type-patterns.md`. Change those files, not the
+  reuse `data/raw/blog-html/` cache on re-runs — never re-hit a page already cached.
+- Scoring weights/thresholds live in `reference/blog-scoring-rules.md`; classification
+  patterns in `reference/blog-content-type-patterns.md`. Change those files, not the
   code, to tune behaviour.
 
 ## Tech stack (MVP)
@@ -71,14 +71,14 @@ if unmet. Full table in `SPEC.md` §4.
   (Deviation from [cannibalization-engine](https://github.com/adamjaimesrey/seo-cannibalization-engine):
   `requests` + `beautifulsoup4`/`lxml` are needed to fetch and parse live HTML in Stage 3.)
 - Stage 5 only adds `anthropic` and `python-docx`. No ChromaDB / vector-store packages.
-- Stage 4 output is a worklist table at `output/sihs-worklist.xlsx` (pandas +
+- Stage 4 output is a worklist table at `output/blog-worklist.xlsx` (pandas +
   openpyxl). No dashboard/plotly.
 
 ## Secrets & version control
 
 - `.env` is in `.gitignore`; API keys never enter git history. (`.env` /
   `ANTHROPIC_API_KEY` are Stage 5 only — not needed for Stages 0–4.)
-- `data/raw/html/` is gitignored (fetched cache, re-derivable).
+- `data/raw/blog-html/` is gitignored (fetched cache, re-derivable).
 - Git for version control. Commit after each passing test with a descriptive
   message. Verify the file was written before committing.
 

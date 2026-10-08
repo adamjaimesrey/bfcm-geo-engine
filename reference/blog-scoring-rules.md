@@ -1,6 +1,6 @@
 # GEO extractability scoring rubric (Stage 3, absolute)
 
-Score 0-100. Weights are placeholders — tune here, not in score.py.
+Score 0-100. Weights are placeholders — tune here, not in blog_score.py.
 
 | Signal | Detection | Weight |
 |--------|-----------|--------|

@@ -1,7 +1,7 @@
-# Stage 5 prompt — issues log (fixes for scripts/remediate.py)
+# Stage 5 prompt — issues log (fixes for scripts/blog_remediate.py)
 
 Running list of shortcomings found while reviewing the 11 generated .docx briefs.
-Fix ALL of these in the remediate.py prompt in one pass, then regenerate the batch.
+Fix ALL of these in the blog_remediate.py prompt in one pass, then regenerate the batch.
 Reference implementation of the target output = the hand-amended 01_best-ecommerce-clothes-steamer.docx.
 
 | # | Issue | Fix at prompt stage | Status |
@@ -12,7 +12,7 @@ Reference implementation of the target output = the hand-amended 01_best-ecommer
 
 ## Notes
 - Standard: the client's content editor pastes from the docx with zero writing. Content = spoon-fed and verbatim; only placement is instructed.
-- Re-running remediate.py overwrites output/edits/ with fresh API calls — reviewed copies live in Drive.
+- Re-running blog_remediate.py overwrites output/blog-edits/ with fresh API calls — reviewed copies live in Drive.
 
 ## Issue F (CRITICAL)
 | F | A comparison table included a non-Ecommerce product type ("Clamp-style handheld press — Not a Ecommerce product category") alongside Ecommerce products, making Ecommerce look like it lacks a solution for that pain point. | The agent must NEVER place a product type/service Ecommerce does not offer as a row/entry ALONGSIDE Ecommerce products in a comparison. Ecommerce must be shown covering every pain point in the comparison. A competitor category may be discussed in body prose (as the "vs" subject), but never sits in the table as a gap. | open |

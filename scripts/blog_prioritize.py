@@ -1,6 +1,6 @@
 """Stage 4 - Prioritise decision-content + gap analysis; write worklist table.
-Reads data/processed/sihs-scored.csv. Precondition: sihs-scored.csv exists.
-Output: output/sihs-worklist.xlsx (pandas + openpyxl). No dashboard/plotly."""
+Reads data/processed/blog-scored.csv. Precondition: blog-scored.csv exists.
+Output: output/blog-worklist.xlsx (pandas + openpyxl). No dashboard/plotly."""
 
 import sys
 from pathlib import Path
@@ -9,8 +9,8 @@ import pandas as pd
 from openpyxl.utils import get_column_letter
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SCORED_CSV = BASE_DIR / "data" / "processed" / "sihs-scored.csv"
-OUTPUT_XLSX = BASE_DIR / "output" / "sihs-worklist.xlsx"
+SCORED_CSV = BASE_DIR / "data" / "processed" / "blog-scored.csv"
+OUTPUT_XLSX = BASE_DIR / "output" / "blog-worklist.xlsx"
 
 REQUIRED = ["slug", "category", "content_type", "geo_score",
             "weakest_criteria", "decision_content"]
@@ -24,7 +24,7 @@ def main():
     scored = pd.read_csv(SCORED_CSV)
     missing = [c for c in REQUIRED if c not in scored.columns]
     if missing:
-        sys.exit(f"FATAL: sihs-scored.csv missing columns: {missing}")
+        sys.exit(f"FATAL: blog-scored.csv missing columns: {missing}")
 
     # normalise decision_content to bool (defensive against str parsing)
     dc = scored["decision_content"].astype(str).str.strip().str.lower()

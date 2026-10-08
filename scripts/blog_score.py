@@ -1,4 +1,4 @@
-"""Stage 3 - GEO extractability scoring (absolute) per reference/scoring-rules.md. Gate G2: live HTML for all in-scope posts cached to data/raw/html/."""
+"""Stage 3 - GEO extractability scoring (absolute) per reference/blog-scoring-rules.md. Gate G2: live HTML for all in-scope posts cached to data/raw/blog-html/."""
 
 import json
 import os
@@ -15,9 +15,9 @@ import requests
 from bs4 import BeautifulSoup
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-CLASSIFIED_CSV = BASE_DIR / "data" / "processed" / "sihs-classified.csv"
-HTML_CACHE_DIR = BASE_DIR / "data" / "raw" / "html"
-OUTPUT_CSV = BASE_DIR / "data" / "processed" / "sihs-scored.csv"
+CLASSIFIED_CSV = BASE_DIR / "data" / "processed" / "blog-classified.csv"
+HTML_CACHE_DIR = BASE_DIR / "data" / "raw" / "blog-html"
+OUTPUT_CSV = BASE_DIR / "data" / "processed" / "blog-scored.csv"
 BANK_CSV = BASE_DIR / "reference" / "sihs-blog-bank.csv"
 
 USER_AGENT = "bfcm-geo-engine/1.0 (SEO GEO audit; internal tool)"

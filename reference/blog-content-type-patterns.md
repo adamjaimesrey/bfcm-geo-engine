@@ -12,4 +12,4 @@ Regex applied to slug / Title / H1 / H2. First match wins, in this order.
 
 Notes:
 - `decision_content=True` flags the GEO-priority types (the ones worth scoring hard).
-- Tune here, not in classify.py.
+- Tune here, not in blog_classify.py.

@@ -8,7 +8,7 @@ import pandas as pd
 BASE_DIR = Path(__file__).resolve().parent.parent
 BANK_CSV = BASE_DIR / "reference" / "sihs-blog-bank.csv"
 INVENTORY_CSV = BASE_DIR / "reference" / "blog-url-inventory.csv"
-OUTPUT_CSV = BASE_DIR / "data" / "processed" / "sihs-filtered.csv"
+OUTPUT_CSV = BASE_DIR / "data" / "processed" / "blog-filtered.csv"
 
 
 def normalize_slug(series: pd.Series) -> pd.Series:

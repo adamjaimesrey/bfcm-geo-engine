@@ -1,7 +1,7 @@
 """Stage 5 - LLM copy-remediation (v2). One .docx of paste-ready GEO edits per
 priority post, via the Anthropic Messages API.
 
-Encodes the Stage-5 rules (see reference/stage5-prompt-issues.md):
+Encodes the Stage-5 rules (see reference/blog-stage5-prompt-issues.md):
   A products = categories the page discusses (add up to 2 per category)
   B paste-ready copy (editorial=placement only)   O tables max 5 columns
   P meta title <=60 / description <=155 chars      Q tables max 5 rows (representative subset)
@@ -13,13 +13,13 @@ Encodes the Stage-5 rules (see reference/stage5-prompt-issues.md):
   M spec-file routing by category (garment/fans/vacuums); specs verbatim, never invent
   N no comparison table when <2 same-category products (still do the rest)
 
-  R refocus (focus-keywords.csv, refocus=YES only): meta/H1/answer-first + 4 fan-out sections
+  R refocus (blog-focus-keywords.csv, refocus=YES only): meta/H1/answer-first + 4 fan-out sections
   S no contradictions (answer-first vs data)       T warnings give exact current -> replacement text
 Requires ANTHROPIC_API_KEY in .env.
 
 Usage:
-  python scripts/remediate.py            # all rows in the worklist
-  python scripts/remediate.py <slug>     # single page (cheap test, e.g. airlift-suction-vs-steam-iron)
+  python scripts/blog_remediate.py            # all rows in the worklist
+  python scripts/blog_remediate.py <slug>     # single page (cheap test, e.g. airlift-suction-vs-steam-iron)
 """
 
 import csv
@@ -36,15 +36,15 @@ from docx.shared import Pt, RGBColor
 from anthropic import Anthropic
 
 BASE_DIR   = Path(__file__).resolve().parent.parent
-WORKLIST   = BASE_DIR / "output" / "sihs-worklist.xlsx"
-HTML_DIR   = BASE_DIR / "data" / "raw" / "html"
+WORKLIST   = BASE_DIR / "output" / "blog-worklist.xlsx"
+HTML_DIR   = BASE_DIR / "data" / "raw" / "blog-html"
 REF        = BASE_DIR / "reference"
 SPEC_FILES = {"garment": REF / "product-spec-garment.csv",
               "fans":    REF / "product-spec-fans.csv",
               "vacuums": REF / "product-spec-vacuums.csv"}
 NAMING     = REF / "naming-conventions.md"
-FOCUS_FILE = REF / "focus-keywords.csv"
-OUT_DIR    = BASE_DIR / "output" / "edits"
+FOCUS_FILE = REF / "blog-focus-keywords.csv"
+OUT_DIR    = BASE_DIR / "output" / "blog-edits"
 ENV_FILE   = BASE_DIR / ".env"
 MODEL      = "claude-sonnet-5"   # if this 404s, swap to your current model string
 MAX_TOKENS = 32000   # room for reasoning + the full answer

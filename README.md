@@ -27,10 +27,10 @@ flowchart TD
     A[In-scope blog bank] --> B[1. Ingest & filter]
     G1{{G1 soft gate: GSC export?}} -. absent: run provisionally .-> B
     B --> C[2. Classify content type]
-    P[(content-type-patterns.md)] --> C
+    P[(blog-content-type-patterns.md)] --> C
     C --> D[3. Fetch live HTML & score GEO extractability]
     G2{{G2 gate: every page fetched or cached?}} --> D
-    R[(scoring-rules.md)] --> D
+    R[(blog-scoring-rules.md)] --> D
     D -.-> X[3.5 Competitor-relative scoring: deferred]
     D --> E[4. Prioritise, bucket & flag content gaps]
     E --> W[Prioritised worklist .xlsx]
@@ -44,11 +44,11 @@ flowchart TD
 
 | Stage | Script | What it does |
 |---|---|---|
-| 1. Ingest | `ingest.py` | Joins the blog inventory to the in-scope bank, mapping columns **by header name**. The join must match the bank exactly, or the run stops. |
-| 2. Classify | `classify.py` | Tags each post as comparison, buying guide, gift guide, price bracket or informational, using patterns kept in `reference/content-type-patterns.md`. The first four are "decision content", the pages that matter most for purchases. |
-| 3. Score | `score.py` | Fetches each page politely (descriptive user-agent, rate limit, cache reused on re-runs) and scores it 0–100 against a fixed rubric: answer-first paragraphs, question headings, comparison tables, FAQ + FAQPage schema, stats, citations, schema completeness, freshness, gift-persona language, and a **penalty for keyword stuffing**. Each page gets its `weakest_criteria`. |
-| 4. Prioritise | `prioritize.py` | Ranks decision-content pages worst-first, routes each to a strategy bucket, and flags content types with too few posts as candidate new content (flagged, never auto-created). |
-| 5. Edit briefs | `remediate.py` | For priority pages, calls the Anthropic Messages API to write a brief: proposed metadata, an answer-first block, a comparison table, an FAQ, JSON-LD and placement notes. Grounded in the brand's product-spec files and naming conventions, then checked in code before output. |
+| 1. Ingest | `blog_ingest.py` | Joins the blog inventory to the in-scope bank, mapping columns **by header name**. The join must match the bank exactly, or the run stops. |
+| 2. Classify | `blog_classify.py` | Tags each post as comparison, buying guide, gift guide, price bracket or informational, using patterns kept in `reference/blog-content-type-patterns.md`. The first four are "decision content", the pages that matter most for purchases. |
+| 3. Score | `blog_score.py` | Fetches each page politely (descriptive user-agent, rate limit, cache reused on re-runs) and scores it 0–100 against a fixed rubric: answer-first paragraphs, question headings, comparison tables, FAQ + FAQPage schema, stats, citations, schema completeness, freshness, gift-persona language, and a **penalty for keyword stuffing**. Each page gets its `weakest_criteria`. |
+| 4. Prioritise | `blog_prioritize.py` | Ranks decision-content pages worst-first, routes each to a strategy bucket, and flags content types with too few posts as candidate new content (flagged, never auto-created). |
+| 5. Edit briefs | `blog_remediate.py` | For priority pages, calls the Anthropic Messages API to write a brief: proposed metadata, an answer-first block, a comparison table, an FAQ, JSON-LD and placement notes. Grounded in the brand's product-spec files and naming conventions, then checked in code before output. |
 | Checks | `check_specs.py` | Validates the product-spec files the briefs rely on. |
 
 ---
@@ -61,7 +61,7 @@ flowchart TD
 
 **A two-strike rule stops automation going in circles.** If a step fails or is rejected twice, the agent stops trying and proposes the cheapest reliable fallback: for a small set, automate the clean majority and hand the ambiguous minority to a human with a dropdown of valid values; for a large set, sample and spot-check, and report the residual error rate.
 
-**The output is held to an editor's standard.** Every LLM brief was reviewed by hand, and each recurring failure became a numbered issue with a rule added to the prompt and, where possible, a check in code. The full log is in [`reference/stage5-prompt-issues.md`](reference/stage5-prompt-issues.md). A few of them:
+**The output is held to an editor's standard.** Every LLM brief was reviewed by hand, and each recurring failure became a numbered issue with a rule added to the prompt and, where possible, a check in code. The full log is in [`reference/blog-stage5-prompt-issues.md`](reference/blog-stage5-prompt-issues.md). A few of them:
 
 | Issue | What went wrong | The rule it created |
 |---|---|---|
@@ -86,12 +86,12 @@ Requires Python 3.
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-bash scripts/run_demo.sh
+bash scripts/run_blog_demo.sh
 ```
 
-The demo runs Stages 1–4 on synthetic data, fully offline (pages are served from a cache of 8 fake blog posts deliberately varied in quality, so scores range from single digits to the high 90s). It writes the prioritised worklist to `output/sihs-worklist.xlsx`.
+The demo runs Stages 1–4 on synthetic data, fully offline (pages are served from a cache of 8 fake blog posts deliberately varied in quality, so scores range from single digits to the high 90s). It writes the prioritised worklist to `output/blog-worklist.xlsx`.
 
-Stage 5 needs an Anthropic API key (see `.env.example`), so the demo skips it. A finished example brief for one page from the demo worklist is in [`sample_output/example-brief.md`](sample_output/example-brief.md): follow that page from its score, to its rank, to the edits that fix its weakest criteria.
+Stage 5 needs an Anthropic API key (see `.env.example`), so the demo skips it. A finished example brief for one page from the demo worklist is in [`sample_output/blog-example-brief.md`](sample_output/blog-example-brief.md): follow that page from its score, to its rank, to the edits that fix its weakest criteria.
 
 ---
 
@@ -104,7 +104,7 @@ Stage 5 needs an Anthropic API key (see `.env.example`), so the demo skips it. A
 ## Repository structure
 
 ```
-scripts/          one script per stage, plus run_demo.sh and leak_check.py
+scripts/          one script per stage, plus run_blog_demo.sh and leak_check.py
 reference/        scoring rubric, classification patterns, controlled vocabulary, QA log
 sample_data/      synthetic inputs and cached pages for the demo
 sample_output/    an example Stage 5 brief

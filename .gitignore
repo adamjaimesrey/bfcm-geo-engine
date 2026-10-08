@@ -2,19 +2,19 @@
 .env
 __pycache__/
 *.pyc
-data/raw/html/
+data/raw/blog-html/
 data/processed/
 .DS_Store
-output/edits/
+output/blog-edits/
 output/*.xlsx
 
 # Local-only leak-check deny list: contains client terms, NEVER commit
 .leakcheck-denylist.txt
 
-# Demo copies staged by scripts/run_demo.sh (exact paths)
+# Demo copies staged by scripts/run_blog_demo.sh (exact paths)
 reference/sihs-blog-bank.csv
 reference/blog-url-inventory.csv
-reference/focus-keywords.csv
+reference/blog-focus-keywords.csv
 reference/product-spec-garment.csv
 reference/product-spec-fans.csv
 reference/product-spec-vacuums.csv

@@ -1,4 +1,4 @@
-"""Stage 2 - Content-type classification (buying/vs/gift/price/informational) per reference/content-type-patterns.md. Precondition: sihs-filtered.csv."""
+"""Stage 2 - Content-type classification (buying/vs/gift/price/informational) per reference/blog-content-type-patterns.md. Precondition: blog-filtered.csv."""
 
 import re
 import sys
@@ -7,12 +7,12 @@ from pathlib import Path
 import pandas as pd
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-FILTERED_CSV = BASE_DIR / "data" / "processed" / "sihs-filtered.csv"
+FILTERED_CSV = BASE_DIR / "data" / "processed" / "blog-filtered.csv"
 INVENTORY_CSV = BASE_DIR / "reference" / "blog-url-inventory.csv"
-OUTPUT_CSV = BASE_DIR / "data" / "processed" / "sihs-classified.csv"
+OUTPUT_CSV = BASE_DIR / "data" / "processed" / "blog-classified.csv"
 BANK_CSV = BASE_DIR / "reference" / "sihs-blog-bank.csv"
 
-# Transcribed from reference/content-type-patterns.md, in priority order.
+# Transcribed from reference/blog-content-type-patterns.md, in priority order.
 PATTERNS = [
     ("comparison_vs", [r"\bvs\b", r"versus", r"compare"], True),
     ("buying_guide", [r"\bbest\b", r"guide", r"choosing", r"which"], True),
